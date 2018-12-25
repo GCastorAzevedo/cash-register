@@ -4,56 +4,28 @@ import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
-// <EditableTableCell className={classes.tablecell} numeric editable={true}>{row.price}</EditableTableCell>
-class EditableTableCell_ extends Component {
-  constructor(props) {
-      super(props);
-      let { editable, children, ...opts} = props;
-      this.state = {
-          editable: editable,
-          value: children,
-          opts: opts
-      }
-  }
-
-  componentDidMount() {
-    // Checkout for: https://stackoverflow.com/questions/38892672/react-why-child-component-doesnt-update-when-prop-changes
-    console.log("editable blabalbla", this.state.editable);
-  }
-
-  render() {
-      const editable = this.state.editable;
-      const opts = this.state.opts;
-      const value = this.state.value;
-      // TODO: add class to input!
-      if (editable) {
-        return (
-            <TableCell {...opts}>
-                <input type="text" className="form-control" defaultValue={value} />
-            </TableCell>
-        );
-      }
-      return (
-        <TableCell {...opts}>{value}</TableCell>
-      );
-  }
-}
-
 function EditableTableCell(props) {
-  const { editable, children, ...opts } = props;
+  const { editable, cellname, children, ...opts } = props;
   const value = children;
-
   if (editable) {
+    // TODO: create css class for input.
     return (
-      <TableCell {...opts}>
-        <input type="text" className="form-control" defaultValue={value} />
-      </TableCell>
+      <EditContext.Consumer>
+        {({ handleInputChange }) => {
+          return (
+            <TableCell {...opts}>
+              <div>
+                <input type="text" className="" defaultValue={value} name={cellname} onChange={handleInputChange}/>
+              </div>
+            </TableCell>
+          );
+        }}
+      </EditContext.Consumer>
     );
   }
   return (
     <TableCell {...opts}>{value}</TableCell>
   );
-
 }
 
 const EditContext = React.createContext({
@@ -69,7 +41,7 @@ function EditButton(props) {
     const cancel = 'Cancel';
     return (
       <EditContext.Consumer>
-        {({saveEdition, cancelEdition}) => (
+        {({ saveEdition, cancelEdition }) => (
           <div>
             <button onClick={saveEdition}>{save}</button>
             <button onClick={cancelEdition}>{cancel}</button>
@@ -81,7 +53,7 @@ function EditButton(props) {
     const edit = 'Edit';
     return (
       <EditContext.Consumer>
-        {({changeEditableState}) => (
+        {({ changeEditableState }) => (
           <div>
             <button onClick={changeEditableState}>{edit}</button>
           </div>
@@ -95,15 +67,13 @@ function Content(props) {
   let row = props.data.row;
   let classes = props.classes;
   let editable = props.editable;
-  // TODO: delete this.
-  console.log("heauheuaheuhaue", editable);
   return (
     <TableRow key={row.id}>
-      <EditableTableCell className={classes.tablecell} editable={editable} component="th" scope="row">{row.name}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} numeric>{row.code}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} numeric>{row.price}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} numeric>{row.quantity}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable}>{row.description}</EditableTableCell>
+      <EditableTableCell className={classes.tablecell} editable={editable} cellname="name" component="th" scope="row">{row["name"]}</EditableTableCell>
+      <EditableTableCell className={classes.tablecell} editable={editable} cellname="code" numeric>{row["code"]}</EditableTableCell>
+      <EditableTableCell className={classes.tablecell} editable={editable} cellname="price" numeric>{row["price"]}</EditableTableCell>
+      <EditableTableCell className={classes.tablecell} editable={editable} cellname="quantity" numeric>{row["quantity"]}</EditableTableCell>
+      <EditableTableCell className={classes.tablecell} editable={editable} cellname="description">{row["description"]}</EditableTableCell>
       <TableCell><EditButton editable={editable}/></TableCell>
     </TableRow>
   );
@@ -113,46 +83,67 @@ function Content(props) {
 class Row extends Component {
   constructor(props) {
     super(props);
-
-    this.changeEditableState = () => {
-      this.setState(state => ({
-        editable: state.editable ? false : true,
-      }));
-    };
     // TODO: what should edit and cancel do ?
-    this.saveEdition = () => {
-      this.setState(state => (state));
-    };
-    this.cancelEdition = () => {
-      this.setState(state => (state));
-    };
+    this.saveEdition = this.saveEdition.bind(this);
+    this.cancelEdition = this.cancelEdition.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.changeEditableState = this.changeEditableState.bind(this);
     // TODO: delete this.
     this.change = this.change.bind(this);
 
+    // const row = { id: 1, name: 'Caixa', code: 123, price: 350.0, quantity: 1, description: 'Caixa de bateria Adah.' };
     this.state = {
-      data: {
-        row: props.row
-      },
       classes: props.classes,
+      data: {
+        row: props.row,
+        savedRow: props.row,
+        originalRow: props.row,
+      },
       editable: false,
-      changeEditableState: this.changeEditableState,
       saveEdition: this.saveEdition,
       cancelEdition: this.cancelEdition,
+      handleInputChange: this.handleInputChange,
+      changeEditableState: this.changeEditableState,
     }
-
-    // TODO: delete this.
-    console.log(this.state.editable);
   }
+
+  // TODO: what should edit and cancel do ?
+  saveEdition() {
+    this.setState(state => (state));
+  };
+
+  cancelEdition() {
+    this.setState(state => (state));
+  };
+
+  handleInputChange(event) {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+    this.setState(state => {
+      state.data.row[name] = value;
+      return state;
+    });
+  };
+
+  changeEditableState() {
+    this.setState(state => ({
+      editable: state.editable ? false : true,
+    }));
+  };
 
   // TODO: delete this.
   change() {
-    this.setState(state => ({
-      editable: !state.editable // ? true : false
-    }));
+    this.setState(state => {
+      state.editable = !state.editable;
+      state.data.savedRow = Math.floor(Math.random() * 10);
+      return state;
+    });
   }
 
   componentDidUpdate() {
-    console.log(this.state);
+    // TODO: delete this!
+    console.log(' \n\n -+-+-+-+-+-+-+-+-+-+ \n\n ', this.state);
   }
 
   render() {
@@ -184,137 +175,3 @@ const styles = theme => ({
 });
 
 export default withStyles(styles)(Row);
-
-/*
-class RegisterTable extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            classes: props.classes,
-            data: {
-                rows: props.rows
-            }
-        }
-
-    }
-
-    render() {
-        const classes = this.props.classes;
-        const rows = this.state.data.rows;
-        return (
-            <Paper className={classes.root}>
-                <Table className={classes.table}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell className={classes.tablecell}>Product</TableCell>
-                            <TableCell className={classes.tablecell} numeric>Code</TableCell>
-                            <TableCell className={classes.tablecell} numeric>Price</TableCell>
-                            <TableCell className={classes.tablecell} numeric>Quantity</TableCell>
-                            <TableCell className={classes.tablecell}>Description</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map( (row, i) => {
-                            return (
-                                <TableRow key={row.id}>
-                                    <TableCell className={classes.tablecell} component="th" scope="row">{row.name}</TableCell>
-                                    <TableCell className={classes.tablecell} numeric>{row.code}</TableCell>
-                                    <EditableTableCell className={classes.tablecell} numeric editable={true}>{row.price}</EditableTableCell>
-                                    <TableCell className={classes.tablecell} numeric>{row.quantity}</TableCell>
-                                    <TableCell className={classes.tablecell}>{row.description}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </Paper>
-        );
-    }
-}
-*/
-
-/*
-
-
-
-
-// Make sure the shape of the default value passed to
-// createContext matches the shape that the consumers expect!
-export const ThemeContext = React.createContext({
-  theme: themes.dark,
-  toggleTheme: () => {},
-});
-
-
-
-
-import {ThemeContext} from './theme-context';
-
-function ThemeTogglerButton() {
-  // The Theme Toggler Button receives not only the theme
-  // but also a toggleTheme function from the context
-  return (
-    <ThemeContext.Consumer>
-      {({theme, toggleTheme}) => (
-        <button
-          onClick={toggleTheme}
-          style={{backgroundColor: theme.background}}>
-          Toggle Theme
-        </button>
-      )}
-    </ThemeContext.Consumer>
-  );
-}
-
-export default ThemeTogglerButton;
-
-
-
-
-import {ThemeContext, themes} from './theme-context';
-import ThemeTogglerButton from './theme-toggler-button';
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.toggleTheme = () => {
-      this.setState(state => ({
-        theme:
-          state.theme === themes.dark
-            ? themes.light
-            : themes.dark,
-      }));
-    };
-
-    // State also contains the updater function so it will
-    // be passed down into the context provider
-    this.state = {
-      theme: themes.light,
-      toggleTheme: this.toggleTheme,
-    };
-  }
-
-  render() {
-    // The entire state is passed to the provider
-    return (
-      <ThemeContext.Provider value={this.state}>
-        <Content />
-      </ThemeContext.Provider>
-    );
-  }
-}
-
-function Content() {
-  return (
-    <div>
-      <ThemeTogglerButton />
-    </div>
-  );
-}
-
-ReactDOM.render(<App />, document.root);
-
-
-
- */
