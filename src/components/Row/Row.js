@@ -3,20 +3,25 @@ import PropTypes, { nominalTypeHack } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import DeleteForever from '@material-ui/icons/DeleteForever';
+import Create from '@material-ui/icons/Create';
+import Clear from '@material-ui/icons/Clear';
+import Save from '@material-ui/icons/Save';
+import Add from '@material-ui/icons/Add';
+import './Row.css';
 
 function EditableTableCell(props) {
-  const { editable, cellname, children, ...opts } = props;
+  const { editable, cellname, children, classes, ...opts } = props;
   const value = children;
   if (editable) {
     // TODO: create css class for input.
     return (
       <EditContext.Consumer>
         {({ handleInputChange }) => {
+          // className={props.classes.tablecellinput}
           return (
-            <TableCell {...opts}>
-              <div>
-                <input type="text" className="" defaultValue={value} name={cellname} onChange={handleInputChange}/>
-              </div>
+            <TableCell className={classes.tablecell} {...opts}>
+                <input className="jss196" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
             </TableCell>
           );
         }}
@@ -24,7 +29,7 @@ function EditableTableCell(props) {
     );
   }
   return (
-    <TableCell {...opts}>{value}</TableCell>
+    <TableCell className={classes.tablecell} {...opts}>{value}</TableCell>
   );
 }
 
@@ -34,29 +39,45 @@ const EditContext = React.createContext({
 });
 
 // TODO: render a edit/save/remove buttons, that alters the editable state of the EditableCell
+// TODO: create css class for EditButton
 function EditButton(props) {
 
   if (props.editable) {
-    const save = 'Save';
-    const cancel = 'Cancel';
+    // className={props.classes.editbutton}
     return (
       <EditContext.Consumer>
         {({ saveEdition, cancelEdition }) => (
-          <div>
-            <button onClick={saveEdition}>{save}</button>
-            <button onClick={cancelEdition}>{cancel}</button>
-          </div>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <button onClick={saveEdition}>
+                    <Save />
+                  </button>
+                  <button onClick={cancelEdition}>
+                    <Clear />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         )}
       </EditContext.Consumer>
     );
   } else {
-    const edit = 'Edit';
     return (
       <EditContext.Consumer>
         {({ changeEditableState }) => (
-          <div>
-            <button onClick={changeEditableState}>{edit}</button>
-          </div>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <button onClick={changeEditableState}><Create /></button>
+                  <button><DeleteForever /></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         )}
       </EditContext.Consumer>
     );
@@ -67,14 +88,15 @@ function Content(props) {
   let row = props.data.row;
   let classes = props.classes;
   let editable = props.editable;
+  // TODO: implement a loop inside TableRow for adding variable number of cells.
   return (
     <TableRow key={row.id}>
-      <EditableTableCell className={classes.tablecell} editable={editable} cellname="name" component="th" scope="row">{row["name"]}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} cellname="code" numeric>{row["code"]}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} cellname="price" numeric>{row["price"]}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} cellname="quantity" numeric>{row["quantity"]}</EditableTableCell>
-      <EditableTableCell className={classes.tablecell} editable={editable} cellname="description">{row["description"]}</EditableTableCell>
-      <TableCell><EditButton editable={editable}/></TableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="name" component="th" scope="row">{row["name"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="code">{row["code"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="price" numeric>{row["price"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="quantity" numeric>{row["quantity"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="description">{row["description"]}</EditableTableCell>
+      <TableCell><EditButton editable={editable} classes={classes}/></TableCell>
     </TableRow>
   );
 }
@@ -95,6 +117,7 @@ class Row extends Component {
     this.state = {
       classes: props.classes,
       data: {
+        // TODO: how to update only the row, and maintain originalRow ? How to avoid props passing ?
         row: props.row,
         savedRow: props.row,
         originalRow: props.row,
@@ -151,9 +174,9 @@ class Row extends Component {
     const classes = this.state.classes;
     const editable = this.state.editable;
     // TODO: delete the change state button
+    // <button onClick={this.change}> change state</button>
     return (
       <EditContext.Provider value={this.state}>
-        <button onClick={this.change}> change state</button>
         <Content data={data} classes={classes} editable={editable}/>
       </EditContext.Provider>
     );
