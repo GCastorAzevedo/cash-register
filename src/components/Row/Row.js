@@ -131,11 +131,34 @@ class Row extends Component {
 
   // TODO: what should edit and cancel do ?
   saveEdition() {
-    this.setState(state => (state));
+    this.setState(prevState => {
+      const newRow = prevState.data.currentRow;
+      const newData = {
+        currentRow: newRow,
+        originalRow: newRow
+      };
+      const editableStatus = !prevState.editable;
+      return {
+        data: newData,
+        editable: editableStatus
+      }
+    });
   };
 
   cancelEdition() {
-    this.setState(state => (state));
+    this.setState(prevState => {
+      const oldRow = prevState.data.oldRow;
+      const oldData = {
+        currentRow: oldRow,
+        originalRow: oldRow
+      }
+      const editableStatus = !prevState.editable;
+
+      return {
+        data: oldData,
+        editable: editableStatus
+      }
+    });
   };
 
   handleInputChange(event) {
@@ -143,9 +166,9 @@ class Row extends Component {
     const name = target.name;
     const value = target.value;
 
-    this.setState((state, props) => {
-      const oldRow = state.data.originalRow;
-      const newRow = state.data.currentRow;
+    this.setState((prevState, props) => {
+      const oldRow = prevState.data.originalRow;
+      const newRow = prevState.data.currentRow;
       newRow[name] = Number(value);
 
       const data = {
