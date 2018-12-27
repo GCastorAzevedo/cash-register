@@ -85,7 +85,7 @@ function EditButton(props) {
 }
 
 function Content(props) {
-  let row = props.data.row;
+  let row = props.data.currentRow;
   let classes = props.classes;
   let editable = props.editable;
   // TODO: implement a loop inside TableRow for adding variable number of cells.
@@ -113,14 +113,13 @@ class Row extends Component {
     // TODO: delete this.
     this.change = this.change.bind(this);
 
+    // TODO: delete this.
     // const row = { id: 1, name: 'Caixa', code: 123, price: 350.0, quantity: 1, description: 'Caixa de bateria Adah.' };
     this.state = {
       classes: props.classes,
       data: {
-        // TODO: how to update only the row, and maintain originalRow ? How to avoid props passing ?
-        row: props.row,
-        savedRow: props.row,
-        originalRow: props.row,
+        originalRow: Object.assign({}, props.row),
+        currentRow: props.row,
       },
       editable: false,
       saveEdition: this.saveEdition,
@@ -143,15 +142,25 @@ class Row extends Component {
     const target = event.target;
     const name = target.name;
     const value = target.value;
-    this.setState(state => {
-      state.data.row[name] = value;
-      return state;
+
+    this.setState((state, props) => {
+      const oldRow = state.data.originalRow;
+      const newRow = state.data.currentRow;
+      newRow[name] = Number(value);
+
+      const data = {
+        currentRow: newRow,
+        originalRow: oldRow,
+      }
+      return {
+        data: data
+      };
     });
   };
 
   changeEditableState() {
     this.setState(state => ({
-      editable: state.editable ? false : true,
+      editable: !state.editable,
     }));
   };
 
