@@ -11,7 +11,7 @@ import Add from '@material-ui/icons/Add';
 import './Row.css';
 
 function EditableTableCell(props) {
-  const { editable, cellname, children, classes, ...opts } = props;
+  const { editable, cellname, children, classes, description, ...opts } = props;
   const value = children;
   if (editable) {
     // TODO: create css class for input.
@@ -19,11 +19,19 @@ function EditableTableCell(props) {
       <EditContext.Consumer>
         {({ handleInputChange }) => {
           // className={props.classes.tablecellinput}
-          return (
-            <TableCell className={classes.tablecell} {...opts} >
-              <input className="jss196" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
-            </TableCell>
-          );
+          if (description) {
+            return (
+              <TableCell className={classes.tablecell} {...opts} >
+                <textarea className="" defaultValue={value} name={cellname} onChange={handleInputChange} ></textarea>
+              </TableCell>
+            );
+          } else {
+            return (
+              <TableCell className={classes.tablecell} {...opts} >
+                <input className="" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
+              </TableCell>
+            );
+          }
         }}
       </EditContext.Consumer>
     );
@@ -78,11 +86,11 @@ function Content(props) {
   // TODO: implement a loop inside TableRow for adding variable number of cells.
   return (
     <TableRow key={row.id}>
-      <EditableTableCell style={{backgroundColor: 'orange'}} editable={editable} classes={classes} cellname="name" component="th" scope="row">{row["name"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="name" component="th" scope="row">{row["name"]}</EditableTableCell>
       <EditableTableCell editable={editable} classes={classes} cellname="code">{row["code"]}</EditableTableCell>
       <EditableTableCell editable={editable} classes={classes} cellname="price" numeric>{row["price"]}</EditableTableCell>
       <EditableTableCell editable={editable} classes={classes} cellname="quantity" numeric>{row["quantity"]}</EditableTableCell>
-      <EditableTableCell editable={editable} classes={classes} cellname="description">{row["description"]}</EditableTableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="description" description={true}>{row["description"]}</EditableTableCell>
       <TableCell><EditButton editable={editable} classes={classes}/></TableCell>
     </TableRow>
   );
@@ -206,6 +214,7 @@ class Row extends Component {
 const styles = theme => ({
   tablecell: {
       fontSize: '14pt',
+      //lineHeight: 0,
   }
 });
 
