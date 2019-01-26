@@ -19,7 +19,20 @@ button {
     -webkit-tap-highlight-color: transparent;
 }
 
+input:focus {
+    outline: none;
+}
+
 input {
+    max-width: 50px;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    text-align: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-rendering: auto;
     color: initial;
     letter-spacing: normal;
@@ -30,51 +43,20 @@ input {
     display: inline-block;
     text-align: end;
     margin: 0em;
-    font: 400 13.3333px Arial;
+    font: inherit; /*400 13.3333px Arial;*/
 }
 
+/*
 .jss196 {
     font: inherit;
     color: currentColor;
     width: 100%;
     border: 0;
     margin: 0;
-    padding: 6px 0 7px;
+    padding: 0; /*6px 0 7px;
     display: block;
     min-width: 0;
     box-sizing: content-box;
     background: none;
     -webkit-tap-highlight-color: transparent;
-}
-
-.jss196:after {
-
-}
-
-.jss196:before {
-    
-}
-
-input, textarea, select, button, meter, progress {
-    -webkit-writing-mode: horizontal-tb !important;
-}
-
-/*
-input, textarea, select, button {
-    text-rendering: auto;
-    color: initial;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-}
-user agent stylesheet
-input, textarea, select, button, meter, progress {
-    -webkit-writing-mode: horizontal-tb !important;
-}
-*/
+}*/

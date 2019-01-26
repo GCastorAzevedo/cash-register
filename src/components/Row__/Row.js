@@ -21,9 +21,18 @@ function EditableTableCell(props) {
           // className={props.classes.tablecellinput}
           return (
             <TableCell className={classes.tablecell} {...opts} >
-              <input className="jss196" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
+              <div className="tatata">
+                <input className="jss196" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
+              </div>
             </TableCell>
           );
+          
+          /*return (
+            <TableCell >
+              <div className="tatata" >{"Tatata"}</div>
+            </TableCell>
+          );*/
+          
         }}
       </EditContext.Consumer>
     );
@@ -38,6 +47,7 @@ const EditContext = React.createContext({
   changeEditableState: () => {},
 });
 
+// TODO: render a edit/save/remove buttons, that alters the editable state of the EditableCell
 // TODO: create css class for EditButton
 function EditButton(props) {
 
@@ -58,6 +68,22 @@ function EditButton(props) {
       </EditContext.Consumer>
     );
   } else {
+    /*
+    <EditContext.Consumer>
+        {({ changeEditableState }) => (
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <button onClick={changeEditableState}><Create /></button>
+                  <button><DeleteForever /></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </EditContext.Consumer>
+    */
     return (
       <EditContext.Consumer>
         {({ changeEditableState }) => (
@@ -202,8 +228,15 @@ class Row extends Component {
   }
 }
 
-// TODO: delete
 const styles = theme => ({
+  root: {
+      width: '100%',
+      marginTop: theme.spacing.unit * 3,
+      overflowX: 'auto',
+  },
+  table: {
+      minWidth: 700,
+  },
   tablecell: {
       fontSize: '14pt',
   }

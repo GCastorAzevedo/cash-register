@@ -16,6 +16,7 @@ const styles = theme => ({
     },
     table: {
         minWidth: 700,
+        tableLayout: 'fixed',
     },
     tablecell: {
         fontSize: '14pt'
