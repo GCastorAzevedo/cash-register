@@ -1,34 +1,38 @@
 import React, { Component } from 'react';
 import PropTypes, { nominalTypeHack } from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import Create from '@material-ui/icons/Create';
-import Clear from '@material-ui/icons/Clear';
+import Undo from '@material-ui/icons/Undo';
 import Save from '@material-ui/icons/Save';
 import Add from '@material-ui/icons/Add';
 import './Row.css';
+
+function autoGrow_(element) {
+  element.style.height = "5px";
+  element.style.height = (element.scrollHeight)+"px";
+}
 
 function EditableTableCell(props) {
   const { editable, cellname, children, classes, description, ...opts } = props;
   const value = children;
   if (editable) {
-    // TODO: create css class for input.
+    // Auto-height of textarea: https://stackoverflow.com/questions/17772260/textarea-auto-height
     return (
       <EditContext.Consumer>
-        {({ handleInputChange }) => {
-          // className={props.classes.tablecellinput}
+        {({ handleInputChange}) => {
           if (description) {
             return (
               <TableCell className={classes.tablecell} {...opts} >
-                <textarea className="" defaultValue={value} name={cellname} onChange={handleInputChange} ></textarea>
+                <textarea defaultValue={value} name={cellname} onChange={handleInputChange}>
+                </textarea>
               </TableCell>
             );
           } else {
             return (
               <TableCell className={classes.tablecell} {...opts} >
-                <input className="" type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
+                <input type="text" defaultValue={value} name={cellname} onChange={handleInputChange}/>
               </TableCell>
             );
           }
@@ -50,16 +54,15 @@ const EditContext = React.createContext({
 function EditButton(props) {
 
   if (props.editable) {
-    // className={props.classes.editbutton}
     return (
       <EditContext.Consumer>
         {({ saveEdition, cancelEdition }) => (
-          <div>
-            <button onClick={saveEdition}>
+          <div className="button-parent-div">
+            <button style={{color: 'royalblue'}} onClick={saveEdition}>
               <Save />
             </button>
-            <button onClick={cancelEdition}>
-              <Clear />
+            <button style={{color: 'indianred'}} onClick={cancelEdition}>
+              <Undo />
             </button>
           </div>
         )}
@@ -69,9 +72,9 @@ function EditButton(props) {
     return (
       <EditContext.Consumer>
         {({ changeEditableState }) => (
-          <div>
-            <button onClick={changeEditableState}><Create /></button>
-            <button><DeleteForever /></button>
+          <div className="button-parent-div">
+            <button style={{color: 'olivedrab'}} onClick={changeEditableState}><Create /></button>
+            <button style={{color: 'indianred'}} ><DeleteForever /></button>
           </div>
         )}
       </EditContext.Consumer>
@@ -90,8 +93,10 @@ function Content(props) {
       <EditableTableCell editable={editable} classes={classes} cellname="code">{row["code"]}</EditableTableCell>
       <EditableTableCell editable={editable} classes={classes} cellname="price" numeric>{row["price"]}</EditableTableCell>
       <EditableTableCell editable={editable} classes={classes} cellname="quantity" numeric>{row["quantity"]}</EditableTableCell>
-      <EditableTableCell editable={editable} classes={classes} cellname="description" description={true}>{row["description"]}</EditableTableCell>
-      <TableCell><EditButton editable={editable} classes={classes}/></TableCell>
+      <EditableTableCell editable={editable} classes={classes} cellname="description" description>{row["description"]}</EditableTableCell>
+      <TableCell>
+        <EditButton editable={editable} classes={classes}/>
+      </TableCell>
     </TableRow>
   );
 }
@@ -100,16 +105,12 @@ function Content(props) {
 class Row extends Component {
   constructor(props) {
     super(props);
-    // TODO: what should edit and cancel do ?
+
     this.saveEdition = this.saveEdition.bind(this);
     this.cancelEdition = this.cancelEdition.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.changeEditableState = this.changeEditableState.bind(this);
-    // TODO: delete this.
-    this.change = this.change.bind(this);
 
-    // TODO: delete this.
-    // const row = { id: 1, name: 'Caixa', code: 123, price: 350.0, quantity: 1, description: 'Caixa de bateria Adah.' };
     this.state = {
       classes: props.classes,
       data: {
@@ -124,7 +125,6 @@ class Row extends Component {
     }
   }
 
-  // TODO: what should edit and cancel do ?
   saveEdition() {
     this.setState(prevState => {
       const newRow = prevState.data.currentRow;
@@ -182,26 +182,10 @@ class Row extends Component {
     }));
   };
 
-  // TODO: delete this.
-  change() {
-    this.setState(state => {
-      state.editable = !state.editable;
-      state.data.savedRow = Math.floor(Math.random() * 10);
-      return state;
-    });
-  }
-
-  componentDidUpdate() {
-    // TODO: delete this!
-    console.log(' \n\n -+-+-+-+-+-+-+-+-+-+ \n\n ', this.state);
-  }
-
   render() {
     const data = this.state.data;
     const classes = this.state.classes;
     const editable = this.state.editable;
-    // TODO: delete the change state button
-    // <button onClick={this.change}> change state</button>
     return (
       <EditContext.Provider value={this.state}>
         <Content data={data} classes={classes} editable={editable}/>
@@ -210,12 +194,4 @@ class Row extends Component {
   }
 }
 
-// TODO: delete
-const styles = theme => ({
-  tablecell: {
-      fontSize: '14pt',
-      //lineHeight: 0,
-  }
-});
-
-export default withStyles(styles)(Row);
+export default Row;

@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Row from './Row';
+import Row from '../Row';
 
 const styles = theme => ({
     root: {
@@ -18,7 +18,6 @@ const styles = theme => ({
     table: {
         minWidth: 700,
         tableLayout: 'fixed',
-
     },
     tablecell: {
         fontSize: '14pt'
@@ -37,52 +36,11 @@ class RegisterTable extends Component {
 
     }
 
-    /* <Paper className={classes.root}>
-          <Table className={classes.table}>
-              <TableHead>
-                  <TableRow>
-                      <TableCell className={classes.tablecell}>Product</TableCell>
-                      <TableCell className={classes.tablecell} numeric>Code</TableCell>
-                      <TableCell className={classes.tablecell} numeric>Price</TableCell>
-                      <TableCell className={classes.tablecell} numeric>Quantity</TableCell>
-                      <TableCell className={classes.tablecell}>Description</TableCell>
-                  </TableRow>
-              </TableHead>
-              <TableBody>
-                  {rows.map( (row, i) => {
-                      return (
-                          <Row key={i} row={row}/>
-                      );
-                  })}
-              </TableBody>
-          </Table>
-      </Paper> */
-
     render() {
         const classes = this.props.classes;
         const rows = this.state.data.rows;
         return (
-          <Paper className={classes.root}>
-            <table>
-              <thead>
-                <tr>
-                  <th className={classes.tablecell}>Product</th>
-                  <td className={classes.tablecell}>Code</td>
-                  <td className={classes.tablecell}>Price</td>
-                  <td classname={classes.tablecell}>Quantity</td>
-                  <td className={classes.tablecell}>Description</td>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => {
-                  return (
-                    <Row key={i} row={row} />
-                  );
-                })}
-              </tbody>
-            </table>
-          </Paper>
-            /* <Paper className={classes.root}>
+            <Paper className={classes.root}>
                 <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
@@ -91,17 +49,18 @@ class RegisterTable extends Component {
                             <TableCell className={classes.tablecell} numeric>Price</TableCell>
                             <TableCell className={classes.tablecell} numeric>Quantity</TableCell>
                             <TableCell className={classes.tablecell}>Description</TableCell>
+                            <TableCell className={classes.tablecell}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map( (row, i) => {
                             return (
-                                <Row key={i} row={row}/>
+                                <Row key={i} row={row} classes={classes}/>
                             );
                         })}
                     </TableBody>
                 </Table>
-            </Paper> */
+            </Paper>
         );
     }
 }

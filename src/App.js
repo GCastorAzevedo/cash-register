@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import RegisterTable from './components/Row/Table';//'./components/Register/Table';
-import Row from './components/Row/Row';
+import RegisterTable from './components/Table';
 
 let id = 0;
 function createData(name, code, price, quantity, description) {
