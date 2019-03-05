@@ -23,13 +23,6 @@ class App extends Component {
         <RegisterTable rows={rows}/>
       </div>
     );
-    /*
-    return (
-      <div className="App">
-        <RegisterTable rows={rows}/>
-      </div>
-    );
-    */
   }
 }
 

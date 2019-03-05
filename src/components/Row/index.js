@@ -9,7 +9,10 @@ import Save from '@material-ui/icons/Save';
 import Add from '@material-ui/icons/Add';
 import './Row.css';
 
-function autoGrow_(element) {
+function autoGrow(event) {
+  // https://stackoverflow.com/questions/995168/textarea-to-resize-based-on-content-length
+  // Auto-height of textarea: https://stackoverflow.com/questions/17772260/textarea-auto-height
+  const element = event.target;
   element.style.height = "5px";
   element.style.height = (element.scrollHeight)+"px";
 }
@@ -17,15 +20,23 @@ function autoGrow_(element) {
 function EditableTableCell(props) {
   const { editable, cellname, children, classes, description, ...opts } = props;
   const value = children;
+
+  const growTextArea = (element) => {
+    if (element) {
+      element.style.height = (element.scrollHeight) + "px";
+    }
+  }
   if (editable) {
-    // Auto-height of textarea: https://stackoverflow.com/questions/17772260/textarea-auto-height
     return (
       <EditContext.Consumer>
-        {({ handleInputChange}) => {
+        {({ handleInputChange }) => {
           if (description) {
             return (
               <TableCell className={classes.tablecell} {...opts} >
-                <textarea defaultValue={value} name={cellname} onChange={handleInputChange}>
+                <textarea
+                  ref={growTextArea} defaultValue={value} name={cellname}
+                  wrap="soft" onChange={handleInputChange}
+                >
                 </textarea>
               </TableCell>
             );
@@ -130,7 +141,7 @@ class Row extends Component {
       const newRow = prevState.data.currentRow;
       const newData = {
         currentRow: newRow,
-        originalRow: newRow
+        originalRow: Object.assign({}, newRow)
       };
       const editableStatus = !prevState.editable;
       return {
@@ -145,7 +156,7 @@ class Row extends Component {
       const oldRow = prevState.data.originalRow;
       const oldData = {
         currentRow: oldRow,
-        originalRow: oldRow
+        originalRow: Object.assign({}, oldRow)
       }
       const editableStatus = !prevState.editable;
 
@@ -161,10 +172,17 @@ class Row extends Component {
     const name = target.name;
     const value = target.value;
 
-    this.setState((prevState, props) => {
+    this.setState(prevState => {
       const oldRow = prevState.data.originalRow;
       const newRow = prevState.data.currentRow;
-      newRow[name] = Number(value);
+      // I think these values should always be treated like strings,
+      // and when they will need to be processed, the function will handle appropriately
+      if (["price", "quantity"].includes(name))  {
+        newRow[name] = Number(value);
+      } else {
+        newRow[name] = value;
+      }
+      console.log(" ++ ", newRow[name], oldRow[name])
 
       const data = {
         currentRow: newRow,
